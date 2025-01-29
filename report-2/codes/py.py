@@ -1,22 +1,23 @@
 import matplotlib.pyplot as plt
 import math
 
+def square(t, T):
+    return 5 if (t%T)<(T/2) else 0
+
 #function to plot the voltage across capacitor as a function of time in the RC circuit
 def rc(r, c, phase, amplitude, w, h, n):
     t_coord = []
     v_coord = []
     t = 0
     v = 0
+    T = 2*math.pi/w
     for i in range(n):
         t_coord.append(t)
         v_coord.append(v)
         temp = math.sin((w * t) + phase)
-        if(temp > 0):
-            temp = amplitude
-        else:
-            temp = 0
         #difference equation is v(n+1) = v(n) + h(V_in - v(n))/RC
-        v = v + (h * ((temp - v)/float(r * c)))
+        #v = v + (h * ((temp - v)/float(r * c)))
+        v = (v*((2*r*c - h)/(2*r*c+h))) + ((h/(2*r*c + h))*(square(t, T) + square(t+h, T)))
         t += h
     return [t_coord, v_coord]
 
@@ -52,3 +53,5 @@ plt.xlim(-20,1000)
 plt.ylim(-2,8)
 plt.grid(True)
 plt.savefig("../figs/fig3.png")
+
+plt.show()
