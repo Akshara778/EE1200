@@ -1,31 +1,30 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import math
 
+# Values of R, L, C 
+R = 55 # ohm
+L = 2.2e-3 # henry
+C = 4600e-12 # farad
 
-#function to plot the voltage across capacitor as a function of time in the LC circuit
-def lc(r, l, C, h, n):
-    t_coord = []
-    v_coord = []
-    t = 0
-    v = 0
-    d = (r/l)**2 - (4/(l * C))
-    c = -r/l
-    b = -2.5 * d
-    for i in range(n):
-        t_coord.append(t)
-        v_coord.append(v)
-        v = 2 * b * math.exp(c * t) * math.sin(d * t)
-        t += h
-    return [t_coord, v_coord]
+h = 1e-9 # stepsize
+tmax = 2e-4 # max time 
 
-#first case is where RC = T, where T is the time period of the input wave
-coord = lc(1, 0.0022, 500e-12, 0.0001, 100000)
-plt.figure()
-plt.plot(coord[0][:], coord[1][:])
-plt.xlabel("x")
-plt.ylabel("y")
-plt.ylim(-5, 5)
+size = int(tmax/h)
+
+z = R * np.sqrt(C/L) /2
+w_n = 1/np.sqrt(L*C) 
+w_d = w_n*np.sqrt(1 - (z * z))
+
+Vc0 = 5
+
+t = np.linspace(0, tmax, size)
+
+Vc = Vc0 * (np.exp(-z*w_n*t)) * (np.cos(w_d*t) + ((w_n*z/w_d)*np.sin(w_d*t)) )
+
 plt.grid(True)
-plt.savefig("../figs/fig1.png")
-
+plt.plot(t, Vc)
+plt.savefig("../figs/fig2.png")
+plt.xlabel("Time (s)")
+plt.ylabel("Voltage (Vc)")
 plt.show()
